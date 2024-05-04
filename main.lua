@@ -8,10 +8,15 @@ end
 
 function run_all(ss, path)
 	path = path or ""
+	if ss.readme then
+		print("-------------------advise---------------")
+		print(ss.readme)
+		print("-------------------advise---------------")
+	end
 	for name, sample in pairs(ss) do
 		if type(sample) == "function" then
 			timer(path..name, sample)
-		else
+		elseif type(sample) == "table" then
 			run_all(sample, path..name.."->")
 		end
 	end

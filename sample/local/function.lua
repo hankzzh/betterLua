@@ -1,4 +1,9 @@
+local readme = [[
+	1. 减少函数调用可以很大提高效率
+]]
+
 return {
+	readme = readme,
 	function()
 		for i = 1, max_tab_size do
 			local x = math.sin(i)

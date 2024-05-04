@@ -1,4 +1,4 @@
---[[
+local readme = [[
 	test复杂度越高，效率约接近
 	总体感觉数值更好
 ]]
@@ -14,6 +14,7 @@ local function test(i)
 end
 
 return {
+	readme = readme,
 	function()
 		for k, v in ipairs(array) do
 			test()

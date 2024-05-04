@@ -1,4 +1,4 @@
---[[
+local readme = [[
 	循环内创建变量比循环外创建变量的效率高（猜想可能因为循环外创建的变量在循环体使用时需要跨域，代价比创建变量大）
 ]]
 max_tab_size = max_tab_size * 1
@@ -18,6 +18,7 @@ local function test(...)
 end
 
 return {
+	readme = readme,
 	function()
 		local a, b, c, d, e
 		for i = 1, max_tab_size do
