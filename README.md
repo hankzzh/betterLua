@@ -57,3 +57,15 @@ LUA_CMD变量需要指定需要测试的lua指令路径
 2. 不同lua版本，结果会有很大不同,luajit,最新版本做了很多优化(可以将脚本中的指令设置为自己的lua指令);
 3. 执行时间更少的也不是一定高效的，要理解lua运行原理，以及运行过程中没有gc的内存来综合考虑;
 
+typedef union Value {
+  GCObject *gc;       /* collectable objects */
+  void *p;            /* light userdata */
+  int b;              /* booleans */
+  lua_CFunction f;    /* light C functions */
+  lua_Integer i;      /* integer numbers */
+  lua_Number n;       /* float numbers */
+} Value;
+typedef struct lua_TValue {
+   Value value_;          //value具体的数值
+   int tt_                //value的类型
+} TValue;

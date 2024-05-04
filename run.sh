@@ -4,10 +4,11 @@ root_dir="sample"
 LUA_CMD=lua
 
 sample=()
-headers=()
+pack=()
 idx=0
 function getdir(){
 	deep=$2"* "
+	packid=$3
 	modname=`basename $1`
     for element in `ls $1`
     do  
@@ -17,10 +18,15 @@ function getdir(){
         then 
 			echo -e "${deep//*/|}\\ "
 			echo -e "${deep//*/|} + $idx - $element"
-            getdir $dir_or_file "${deep//*/|} "
+			deep="${deep//*/|} "
+            getdir $dir_or_file $deep $idx
         else
 			echo -e "$deep $idx - " $element
 			sample[$idx]=$dir_or_file
+			if [ ! -n "$packid" ]; then
+				this_pack=$pack[$packid]
+				$this_pack[${#this_pack[@]}]=$dir_or_file
+			fi
         fi  
     done
 }
@@ -31,11 +37,11 @@ function runcmd(){
 	if test -z $target; then
 		return
 	fi
-	echo -e "\n代码:-------\n"
+	echo -e "\n代码:$target-------\n"
 	cat $target
 	target=${target////.}
 	target=`basename $target .lua`
-	echo -e "\n结果:-------\n"
+	echo -e "\n结果:$target-------\n"
 	$LUA_CMD -l "define" "main.lua" $target
 }
 
@@ -45,18 +51,20 @@ do
 	then
 		echo "timeout"
 		exit
-	elif [ "$cmd" == 'q' -o "$cmd" == "Q" -o "$cmd" == "" ]
+	elif [ "$cmd" == 'q' -o "$cmd" == "Q" ]
 	then
 		echo "exit"
 		exit
-	# elif
-	# 	sample=()
-	# 	idx=0
-	# 	#getdir $root_dir "*"
-	# 	exit
+	elif [ "$cmd" == "" ]
+	then
+		for cmd in ${!sample[@]}
+		do
+			echo $cmd
+			runcmd $cmd
+		done
+	else
+		runcmd $cmd
 	fi
-
-	runcmd $cmd
 done
 
 
