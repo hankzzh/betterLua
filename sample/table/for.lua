@@ -1,6 +1,5 @@
 local readme = [[
-	test复杂度越高，效率约接近
-	总体感觉数值更好
+	差别不大
 ]]
 local array = make_array()
 
@@ -9,7 +8,7 @@ local function test(i)
 	if i > 1 then
 		test(i - 1)
 	end
-	local a, b = 33, 88
+	local a, b = i, i + 10
 	return a + b
 end
 

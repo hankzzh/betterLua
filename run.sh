@@ -1,10 +1,18 @@
 # !bin/bash --login
 
 root_dir="sample"
-LUA_CMD=lua
+LUA_CMDS=()
 
+for args in $*
+do
+	LUA_CMDS[${#LUA_CMDS[*]}]=$args
+done
+if [ ${#LUA_CMDS[*]} -le 0 ]; then
+	LUA_CMDS[${#LUA_CMDS[*]}]=lua
+fi
 sample=()
-pack=()
+declare -A pack
+pack_id_count=()
 idx=0
 function getdir(){
 	deep=$2"* "
@@ -19,13 +27,17 @@ function getdir(){
 			echo -e "${deep//*/|}\\ "
 			echo -e "${deep//*/|} + $idx - $element"
 			deep="${deep//*/|} "
+
+			pack_id_count[$idx]=0
             getdir $dir_or_file $deep $idx
         else
 			echo -e "$deep $idx - " $element
 			sample[$idx]=$dir_or_file
-			if [ ! -n "$packid" ]; then
-				this_pack=$pack[$packid]
-				$this_pack[${#this_pack[@]}]=$dir_or_file
+			if [ $# -gt 1 ]; then
+				packidx=${pack_id_count[$packid]}
+				pack_id_count[$packid]=$((packidx+1))
+				packname="pack_${packid}_${pack_id_count[$packid]}"
+				pack[$packname]=$idx
 			fi
         fi  
     done
@@ -33,6 +45,14 @@ function getdir(){
 getdir $root_dir
 
 function runcmd(){
+	if [ ! "${pack_id_count[$1]}" = "" ]; then
+		for subidx in $(seq 1 ${pack_id_count[$1]}); do
+			packname="pack_$1_${subidx}"
+			runcmd ${pack[$packname]}
+		done
+		return
+	fi
+
 	target=${sample[$1]}
 	if test -z $target; then
 		return
@@ -41,8 +61,12 @@ function runcmd(){
 	cat $target
 	target=${target////.}
 	target=`basename $target .lua`
-	echo -e "\n结果:$target-------\n"
-	$LUA_CMD -l "define" "main.lua" $target
+	echo -e "\n结果:$target----------\n"
+	for LUA_CMD in ${LUA_CMDS[@]}
+	do
+		$LUA_CMD -v
+		$LUA_CMD -l "define" "main.lua" $target
+	done
 }
 
 while [ true ]

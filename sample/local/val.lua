@@ -1,81 +1,10 @@
 local readme = [[
-	循环内创建变量比循环外创建变量的效率高（猜想可能因为循环外创建的变量在循环体使用时需要跨域，代价比创建变量大）
-	差别不是很大，但是考虑到垃圾回收，建议循环外定义变量
+	循环内创建变量比循环外创建变量的效率高
+	因为循环外创建的变量在循环体使用时需要跨域
 ]]
-max_tab_size = max_tab_size * 1
-
-local function raw_test(i, ...)
-	a, b, c, d, e = ...
-	i = i or 2
-	if i > 1 then
-		raw_test(i - 1, ...)
-	end
-	local a, b = 33, 88
-	return a + b
-end
-
-local function test(...)
-	return raw_test(2, ...)
-end
 
 return {
 	readme = readme,
-	function()
-		local a, b, c, d, e
-		for i = 1, max_tab_size do
-			a = 1
-			b = true
-			c = {1}
-			d = "abc"
-			e = nil
-			test(a, b, c, d, e)
-		end
-	end,
-	function()
-		for i = 1, max_tab_size do
-			local a = 1
-			local b = true
-			local c = {1}
-			local d = "abc"
-			local e = nil
-			test(a, b, c, d, e)
-		end
-	end,
-	function()
-		for i = 1, max_tab_size do
-			local t = {1, true, {1}, "abc", nil}
-			local a = t[1]
-			local b = t[2]
-			local c = t[3]
-			local d = t[4]
-			local e = t[5]
-			test(a, b, c, d, e)
-		end
-	end,
-	function()
-		local t = {1, true, {1}, "abc", nil}
-		for i = 1, max_tab_size do
-			--时间最短？需要合理的解释 jit优化？
-			local a = t[1]
-			local b = t[2]
-			local c = t[3]
-			local d = t[4]
-			local e = t[5]
-			test(a, b, c, d, e)
-		end
-	end,
-	function()
-		local t = {1, true, {1}, "abc", nil}
-		for i = 1, max_tab_size do
-			--时间最短？需要合理的解释 jit优化？
-			local a = t[1]
-			local b = t[2]
-			local c = t[3]
-			local d = t[4]
-			local e = t[5]
-			test(t[1], t[2], t[3], t[4], t[5])
-		end
-	end,
 	function()
 		local publicTab = {a = true, b = 1, c = {true}, d = nil, e = 'a'}
 		for i = 1, max_tab_size do
