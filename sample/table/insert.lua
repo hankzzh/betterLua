@@ -5,7 +5,7 @@ local readme = [[
 ]]
 
 local val = "test"
-local max_size = 100
+local max_size = max_tab_size
 return {
 	readme = readme,
 	function()
